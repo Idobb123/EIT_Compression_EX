@@ -1,8 +1,8 @@
 import os
 import time
-from dahuffman import HuffmanCodec
 from bitarray import bitarray
 import pickle
+
 
 class LZ78Compressor:
     """
@@ -43,9 +43,9 @@ class LZ78Compressor:
                 current_string = b""
 
         if current_string:
-            print("curr string :", current_string)
             prefix = current_string[:-1]
-            compressed_data.append((self.dictionary[prefix], current_string[-1]))
+            if prefix:
+               compressed_data.append((self.dictionary[prefix], current_string[-1]))
 
         # Serialize compressed data
         encoded_data = bitarray(endian='big')
@@ -53,21 +53,17 @@ class LZ78Compressor:
             encoded_data.frombytes(index.to_bytes(2, 'big'))
             encoded_data.frombytes(bytes([next_char]))
 
-        # Huffman encode the bitstream
-        codec = HuffmanCodec.from_data(encoded_data.tobytes())
-        huffman_encoded = codec.encode(encoded_data.tobytes())
-
         # Write to output file
         if output_file_path:
             try:
                 with open(output_file_path, 'wb') as output_file:
-                    pickle.dump((huffman_encoded, codec), output_file)
+                    pickle.dump(encoded_data, output_file)
                     print("File compressed successfully.")
             except IOError:
                 print("Could not write to output file.")
                 raise
         else:
-            return huffman_encoded
+            return encoded_data
 
     def decompress(self, input_file_path, output_file_path=None):
         """
@@ -75,15 +71,10 @@ class LZ78Compressor:
         """
         try:
             with open(input_file_path, 'rb') as input_file:
-                huffman_encoded, codec = pickle.load(input_file)
+                encoded_data = pickle.load(input_file)
         except IOError:
             print("Could not open input file.")
             raise
-
-        # Decode Huffman encoded data
-        decoded_data = codec.decode(huffman_encoded)
-        encoded_data = bitarray(endian='big')
-        encoded_data.frombytes(decoded_data)
 
         # Deserialize compressed data
         compressed_data = []
@@ -119,8 +110,9 @@ class LZ78Compressor:
         else:
             return decompressed_data
 
+
 if __name__ == "__main__":
-    MIN_FILE = 1
+    MIN_FILE = 4
     MAX_FILE = 5
     RANGE = range(MIN_FILE, MAX_FILE)
 
@@ -130,10 +122,10 @@ if __name__ == "__main__":
 
     lz78 = LZ78Compressor()
 
-    for i, (input_file, compressed_file, decompressed_file) in enumerate(zip(input_files, compressed_files, decompressed_files)):
+    for i, (input_file, compressed_file, decompressed_file) in enumerate(
+            zip(input_files, compressed_files, decompressed_files)):
         print(f"Processing file {i + 1}...")
 
-        # try:
         # Compress the file
         print(f"Compressing {input_file}...")
         start_time = time.time()
@@ -161,5 +153,3 @@ if __name__ == "__main__":
             else:
                 print(f"File {i + 1} verification failed! The decompressed file does not match the original.")
 
-        # except Exception as e:
-        #     print(f"An error occurred with file {i + 1}: {e}")

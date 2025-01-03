@@ -1,4 +1,3 @@
-from dahuffman import HuffmanCodec
 import math
 import time
 from bitarray import bitarray
@@ -39,8 +38,6 @@ class LZ77Compressor:
         try:
             with open(input_file_path, 'rb') as input_file:
                 data = input_file.read()
-                codec = HuffmanCodec.from_data(data)
-                data = codec.encode(data)
         except IOError:
             print('Could not open input file ...')
             raise
@@ -200,14 +197,6 @@ if __name__ == "__main__":
             print(f"Compressing {input_file}...")
             start_time = time.time()
             lz77.compress(input_file, compressed_file, verbose=False)
-
-            with open(compressed_file, 'rb') as compressed:
-                data = compressed.read()
-                codec = HuffmanCodec.from_data(data)
-                data = codec.encode(data)
-            with open(compressed_file, 'wb') as output_file:
-                output_file.write(data)
-
             end_time = time.time()
 
             # Calculate compression ratio
@@ -221,15 +210,15 @@ if __name__ == "__main__":
             print(f"Compression time: {end_time - start_time:.2f} seconds")
 
             # Decompress the file
-            # print(f"Decompressing {compressed_file}...")
-            # lz77.decompress(compressed_file, decompressed_file)
-            #
-            # # Verify the decompressed file matches the original
-            # with open(input_file, 'rb') as original, open(decompressed_file, 'rb') as decompressed:
-            #     if original.read() == decompressed.read():
-            #         print(f"File {i+1} successfully verified! The decompressed file matches the original.")
-            #     else:
-            #         print(f"File {i+1} verification failed! The decompressed file does not match the original.")
+            print(f"Decompressing {compressed_file}...")
+            lz77.decompress(compressed_file, decompressed_file)
+
+            # Verify the decompressed file matches the original
+            with open(input_file, 'rb') as original, open(decompressed_file, 'rb') as decompressed:
+                if original.read() == decompressed.read():
+                    print(f"File {i+1} successfully verified! The decompressed file matches the original.")
+                else:
+                    print(f"File {i+1} verification failed! The decompressed file does not match the original.")
 
         except Exception as e:
             print(f"An error occurred with file {i+1}: {e}")
