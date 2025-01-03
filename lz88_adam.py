@@ -71,13 +71,14 @@ def lz78_decompress(input_file_path, output_file_path):
 
 
 if __name__ == "__main__":
+    os.makedirs('tests', exist_ok=True)
     MIN_FILE = 1
     MAX_FILE = 5
     RANGE = range(MIN_FILE, MAX_FILE)
 
     input_files = [f"Samp{i}.bin" for i in RANGE]
-    compressed_files = [f"compressed_Samp{i}.bin" for i in RANGE]
-    decompressed_files = [f"decompressed_Samp{i}.bin" for i in RANGE]
+    compressed_files = [f"tests/compressed_Samp{i}.bin" for i in RANGE]
+    decompressed_files = [f"tests/decompressed_Samp{i}.bin" for i in RANGE]
 
     for i, (input_file, compressed_file, decompressed_file) in enumerate(
             zip(input_files, compressed_files, decompressed_files)):
