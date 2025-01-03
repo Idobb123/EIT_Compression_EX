@@ -4,6 +4,15 @@ import pickle
 from collections import defaultdict
 
 
+import json
+
+
+def write_dict_to_file(dictionary, filename):
+    with open(filename, 'w') as file:
+        # Writing the dictionary to the file as a JSON string
+        json.dump(dictionary, file, indent=4)
+
+
 # Build the Huffman tree
 class HuffmanNode:
     def __init__(self, char=None, freq=None):
@@ -70,6 +79,7 @@ def huffman_compress(input_file_path, output_file_path):
 
     # Generate Huffman codes
     huffman_codes = generate_huffman_codes(root)
+    write_dict_to_file(huffman_codes, 'original_codes.txt')
 
     # Encode the data
     encoded_data = encode_data(data, huffman_codes)
@@ -81,14 +91,30 @@ def huffman_compress(input_file_path, output_file_path):
 
         # Write the dictionary
         for char, code in huffman_codes.items():
+            if char == 32:
+                print("a")
             f.write(char.to_bytes(1, 'big'))  # Write the character
             f.write(len(code).to_bytes(1, 'big'))  # Write the length of the code
             f.write(int(code, 2).to_bytes((len(code) + 7) // 8, 'big'))  # Write the Huffman code
 
-        # Write the encoded data
-        f.write(int(encoded_data, 2).to_bytes((len(encoded_data) + 7) // 8, 'big'))
+        # Calculate padding size (if necessary)
+        if len(encoded_data) % 8 != 0:
+            padding_size = 8 - (len(encoded_data) % 8)
+        else:
+            padding_size = 0
+
+        # Write the padding size as a single byte
+        f.write(padding_size.to_bytes(1, 'big'))
+
+        # Write the encoded data (padded to the next multiple of 8 bits)
+        if padding_size > 0:
+            f.write(int(encoded_data, 2).to_bytes((len(encoded_data) + padding_size + 7) // 8, 'big'))
+        else:
+            f.write(int(encoded_data, 2).to_bytes(len(encoded_data) // 8, 'big'))
 
     print(f"Compressed data written to {output_file_path}")
+
+
 
 
 # Step 2: Decompression (Restoring the Original Data)
@@ -110,6 +136,10 @@ def huffman_decompress(input_file_path, output_file_path):
         decoding_tree = {}
         for code, char in huffman_codes.items():
             decoding_tree[code] = chr(char)
+
+        reversed_dict = {v: k for k, v in huffman_codes.items()}
+
+        write_dict_to_file(reversed_dict, 'decom_dict.txt')
 
         # Read the encoded data
         encoded_data = f.read()
@@ -133,6 +163,7 @@ def huffman_decompress(input_file_path, output_file_path):
 
 if __name__ == "__main__":
     # Example usage
+    # input_file = "Samp1.bin"  # The file you want to compress
     input_file = "Samp1.bin"  # The file you want to compress
     compressed_file = "compressed.bin"
     decompressed_file = "decompressed.bin"
