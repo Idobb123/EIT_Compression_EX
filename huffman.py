@@ -171,9 +171,9 @@ def huffman_decompress(input_file_path, output_file_path):
 if __name__ == "__main__":
     # Example usage
     # input_file = "Samp1.bin"  # The file you want to compress
-    input_file = "Samp4.bin"  # The file you want to compress
-    compressed_file = "compressed4.bin"
-    decompressed_file = "decompressed4.bin"
+    input_file = "Samp3.bin"  # The file you want to compress
+    compressed_file = "compressed2.bin"
+    decompressed_file = "decompressed2.bin"
 
     # Compression step
     huffman_compress(input_file, compressed_file)
@@ -181,8 +181,14 @@ if __name__ == "__main__":
     # Decompression step
     huffman_decompress(compressed_file, decompressed_file)
 
-    files = ["Samp1.bin", "Samp2.bin", "Samp3.bin", "Samp4.bin"]
-    comp_files = ["compressed.bin", "compressed2.bin", "compressed3.bin", "compressed4.bin"]
-    decomp_files = ["decompressed.bin", "decompressed2.bin", "decompressed3.bin", "decompressed4.bin"]
-    for file, comp in zip(files, comp_files):
-        print(os.path.getsize(comp) / os.path.getsize(file))
+    # files = ["Samp1.bin", "Samp2.bin", "Samp3.bin", "Samp4.bin"]
+    # comp_files = ["compressed.bin", "compressed2.bin", "compressed3.bin", "compressed4.bin"]
+    # decomp_files = ["decompressed.bin", "decompressed2.bin", "decompressed3.bin", "decompressed4.bin"]
+
+    with open(input_file, 'rb') as original, open(decompressed_file, 'rb') as decompressed:
+        if original.read() == decompressed.read():
+            print(f"successfully verified! The decompressed file matches the original.")
+        else:
+            print(f"verification failed! The decompressed file does not match the original.")
+
+
