@@ -4,7 +4,6 @@ from lz88_adam import lz78_compress, lz78_decompress
 from huffman import huffman_compress, huffman_decompress
 
 if __name__ == "__main__":
-    # TODO figure out how to run ot in loop successfully
     # TODO make code more readable + typing and docs
     # TODO is LZ should not be used?
 

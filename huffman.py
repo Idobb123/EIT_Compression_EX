@@ -38,9 +38,12 @@ def build_huffman_tree(data):
 
 
 # Generate Huffman Codes from the Tree
-def generate_huffman_codes(node, current_code="", codes=defaultdict()):
+def generate_huffman_codes(node, current_code="", codes=None):
     if node is None:
         return
+
+    if codes is None:
+        codes = defaultdict()
 
     # If this is a leaf node, save the code
     if node.char is not None:
