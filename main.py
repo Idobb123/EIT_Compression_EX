@@ -80,6 +80,7 @@ def compress_files(file_paths):
         else:
             print(f"Algorithm {algo}: No successful compression.")
 
+
 def compress_with_paq(file_path):
     # Compress using paq8pxd command-line tool
     compressed_file = f"{file_path}.paq8pxd"
