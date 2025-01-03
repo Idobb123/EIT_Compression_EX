@@ -103,6 +103,9 @@ def huffman_compress(input_file_path, output_file_path):
         else:
             padding_size = 0
 
+        with open("encoded_data.txt", 'w') as file:
+            file.write(encoded_data)
+
         # Write the padding size as a single byte
         f.write(padding_size.to_bytes(1, 'big'))
 
@@ -113,8 +116,6 @@ def huffman_compress(input_file_path, output_file_path):
             f.write(int(encoded_data, 2).to_bytes(len(encoded_data) // 8, 'big'))
 
     print(f"Compressed data written to {output_file_path}")
-
-
 
 
 # Step 2: Decompression (Restoring the Original Data)
@@ -141,23 +142,29 @@ def huffman_decompress(input_file_path, output_file_path):
 
         write_dict_to_file(reversed_dict, 'decom_dict.txt')
 
+        padding_size = int.from_bytes(f.read(1), 'big')
+
         # Read the encoded data
         encoded_data = f.read()
 
         # Decode the encoded data
         bit_str = ''.join([bin(byte)[2:].zfill(8) for byte in encoded_data])
-        decoded_data = ""
+        bit_str = bit_str[padding_size:]
+
+        with open("bit_str.txt", 'w') as file:
+            file.write(bit_str)
+
+        decoded_data = bytearray()  # Use a bytearray to store the decoded binary data
         current_code = ""
         for bit in bit_str:
             current_code += bit
             if current_code in decoding_tree:
-                decoded_data += decoding_tree[current_code]
+                decoded_data.append(ord(decoding_tree[current_code]))  # Add the decoded byte value
                 current_code = ""
 
-    # Write the decoded data to the output file
-    with open(output_file_path, 'wb') as f:
-        f.write(decoded_data.encode('utf-8'))  # Write the decoded content back as a binary file
-
+        # Write the decoded data to the output file
+        with open(output_file_path, 'wb') as f:
+            f.write(decoded_data)  # Write the raw binary data directly
     print(f"Decompressed data written to {output_file_path}")
 
 

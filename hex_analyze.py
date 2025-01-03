@@ -8,3 +8,4 @@ def detect_encoding(file_path):
         print(f"Detected encoding: {result['encoding']}")
         print(f"Confidence: {result['confidence']}")
 
+detect_encoding("Samp1.bin")
