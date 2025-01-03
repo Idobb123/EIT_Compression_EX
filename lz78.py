@@ -41,7 +41,6 @@ class LZ78Compressor:
                     compressed_data.append((0, byte))
                 dictionary_index += 1
                 current_string = b""
-
         if current_string:
             prefix = current_string[:-1]
             if prefix:
