@@ -9,13 +9,13 @@ if __name__ == "__main__":
     # TODO is LZ should not be used?
 
     os.makedirs("tests", exist_ok=True)
-    MIN_FILE = 1
-    MAX_FILE = 5
-    for i in range(MIN_FILE, MAX_FILE):
-        input_file = f"Samp{i}.bin"  # The file you want to compress
-        compressed_file = f"tests/compressed{i}.bin"
-        decompressed_file = f"tests/decompressed{i}.bin"
+    RANGE = range(1, 5)
+    input_files = [f"Samp{i}.bin" for i in RANGE]
+    compressed_files = [f"compressed_Samp{i}.bin" for i in RANGE]
+    decompressed_files = [f"decompressed_Samp{i}.bin" for i in RANGE]
 
+    for i, (input_file, compressed_file, decompressed_file) in enumerate(
+            zip(input_files, compressed_files, decompressed_files)):
         # Compression step
         huffman_compress(input_file, compressed_file)
 
