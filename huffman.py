@@ -1,16 +1,5 @@
 import heapq
-import os
-import pickle
 from collections import defaultdict
-
-
-import json
-
-
-def write_dict_to_file(dictionary, filename):
-    with open(filename, 'w') as file:
-        # Writing the dictionary to the file as a JSON string
-        json.dump(dictionary, file, indent=4)
 
 
 # Build the Huffman tree
@@ -79,7 +68,6 @@ def huffman_compress(input_file_path, output_file_path):
 
     # Generate Huffman codes
     huffman_codes = generate_huffman_codes(root)
-    write_dict_to_file(huffman_codes, 'original_codes.txt')
 
     # Encode the data
     encoded_data = encode_data(data, huffman_codes)
@@ -91,8 +79,6 @@ def huffman_compress(input_file_path, output_file_path):
 
         # Write the dictionary
         for char, code in huffman_codes.items():
-            if char == 32:
-                print("a")
             f.write(char.to_bytes(1, 'big'))  # Write the character
             f.write(len(code).to_bytes(1, 'big'))  # Write the length of the code
             f.write(int(code, 2).to_bytes((len(code) + 7) // 8, 'big'))  # Write the Huffman code
@@ -103,9 +89,6 @@ def huffman_compress(input_file_path, output_file_path):
         else:
             padding_size = 0
 
-        with open("encoded_data.txt", 'w') as file:
-            file.write(encoded_data)
-
         # Write the padding size as a single byte
         f.write(padding_size.to_bytes(1, 'big'))
 
@@ -114,8 +97,6 @@ def huffman_compress(input_file_path, output_file_path):
             f.write(int(encoded_data, 2).to_bytes((len(encoded_data) + padding_size + 7) // 8, 'big'))
         else:
             f.write(int(encoded_data, 2).to_bytes(len(encoded_data) // 8, 'big'))
-
-    print(f"Compressed data written to {output_file_path}")
 
 
 # Step 2: Decompression (Restoring the Original Data)
@@ -140,8 +121,6 @@ def huffman_decompress(input_file_path, output_file_path):
 
         reversed_dict = {v: k for k, v in huffman_codes.items()}
 
-        write_dict_to_file(reversed_dict, 'decom_dict.txt')
-
         padding_size = int.from_bytes(f.read(1), 'big')
 
         # Read the encoded data
@@ -150,9 +129,6 @@ def huffman_decompress(input_file_path, output_file_path):
         # Decode the encoded data
         bit_str = ''.join([bin(byte)[2:].zfill(8) for byte in encoded_data])
         bit_str = bit_str[padding_size:]
-
-        with open("bit_str.txt", 'w') as file:
-            file.write(bit_str)
 
         decoded_data = bytearray()  # Use a bytearray to store the decoded binary data
         current_code = ""
@@ -165,7 +141,6 @@ def huffman_decompress(input_file_path, output_file_path):
         # Write the decoded data to the output file
         with open(output_file_path, 'wb') as f:
             f.write(decoded_data)  # Write the raw binary data directly
-    print(f"Decompressed data written to {output_file_path}")
 
 
 if __name__ == "__main__":
@@ -190,5 +165,3 @@ if __name__ == "__main__":
             print(f"successfully verified! The decompressed file matches the original.")
         else:
             print(f"verification failed! The decompressed file does not match the original.")
-
-
